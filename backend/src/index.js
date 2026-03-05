@@ -1,11 +1,21 @@
 const express = require('express')
 const cors = require('cors')
 const pool = require('./config/db')
-require('dotenv').config({ path: '../.env' })
+require('dotenv').config()
+
+const authRoutes = require('./routes/auth.routes')
 
 const app = express()
 app.use(cors())
 app.use(express.json())
+
+app.use('/auth', authRoutes)
+
+const { verificarToken } = require('./middlewares/auth.middleware')
+
+app.get('/protegido', verificarToken, (req, res) => {
+  res.json({ mensaje: `Hola ${req.usuario.nombre}, tienes acceso`, rol: req.usuario.rol })
+})
 
 app.get('/test', async (req, res) => {
   try {
