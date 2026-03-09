@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import WizardManual from '../components/WizardManual'
+import WizardOrganizacion from '../components/WizardOrganizacion'
 
 export default function Dashboard() {
   const [manuales, setManuales] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const [wizardOpen, setWizardOpen] = useState(false)
+  const [wizardOrgOpen, setWizardOrgOpen] = useState(false)
   const navigate = useNavigate()
   const usuario = JSON.parse(localStorage.getItem('usuario'))
   const token = localStorage.getItem('token')
@@ -50,7 +52,7 @@ export default function Dashboard() {
   const validados = manuales.filter(m => m.estado === 'validado').length
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#f0ebec' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#faf4f5' }}>
 
       {/* Navbar */}
       <nav className="topnav">
@@ -194,14 +196,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Modal seleccion de tipo */}
+      {/* ── Modal seleccion de tipo ─────────────────────────────────────────── */}
       {modalOpen && (
         <div className="modal-overlay open" onClick={() => setModalOpen(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <h2>Nuevo Manual</h2>
             <p>Selecciona el tipo de manual que deseas crear</p>
             <div className="modal-options">
-              <div className="modal-option">
+
+              {/* Organización → abre WizardOrganizacion */}
+              <div className="modal-option" onClick={() => { setModalOpen(false); setWizardOrgOpen(true) }}>
                 <div className="modal-option-icon">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -213,6 +217,8 @@ export default function Dashboard() {
                 <h3>Organizacion</h3>
                 <span>Estructura y puestos</span>
               </div>
+
+              {/* Procedimientos → abre WizardManual */}
               <div className="modal-option" onClick={() => { setModalOpen(false); setWizardOpen(true) }}>
                 <div className="modal-option-icon">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2">
@@ -223,19 +229,28 @@ export default function Dashboard() {
                 <h3>Procedimientos</h3>
                 <span>Procesos y actividades</span>
               </div>
+
             </div>
             <button className="modal-cancel" onClick={() => setModalOpen(false)}>Cancelar</button>
           </div>
         </div>
       )}
 
-      {/* Wizard */}
+      {/* ── Wizard Procedimientos ───────────────────────────────────────────── */}
       {wizardOpen && (
-  <WizardManual
-    onCancelar={() => setWizardOpen(false)}
-    onGuardado={() => { setWizardOpen(false); fetchManuales() }}
-  />
-)}
+        <WizardManual
+          onCancelar={() => setWizardOpen(false)}
+          onGuardado={() => { setWizardOpen(false); fetchManuales() }}
+        />
+      )}
+
+      {/* ── Wizard Organización ─────────────────────────────────────────────── */}
+      {wizardOrgOpen && (
+        <WizardOrganizacion
+          onCancelar={() => setWizardOrgOpen(false)}
+          onGuardado={() => { setWizardOrgOpen(false); fetchManuales() }}
+        />
+      )}
 
     </div>
   )
