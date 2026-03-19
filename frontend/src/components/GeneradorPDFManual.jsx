@@ -483,7 +483,7 @@ function HeaderPagina({ datos, numeroPagina, totalPaginas }) {
       <tbody>
         <tr>
           {/* Logo Municipio — izquierda */}
-          <td style={{ width: '55%', padding: '0 0 8px 0', verticalAlign: 'middle' }}>
+          <td style={{ width: '42%', padding: '0 0 8px 0', verticalAlign: 'middle' }}>
             <img
               src="/LogoMunicipio.png"
               alt="Municipio de Benito Juárez"
@@ -493,14 +493,14 @@ function HeaderPagina({ datos, numeroPagina, totalPaginas }) {
           </td>
 
           {/* Metadata — derecha */}
-          <td style={{ width: '45%', padding: '0 0 8px 12px', verticalAlign: 'top' }}>
+          <td style={{ width: '58%', padding: '0 0 8px 12px', verticalAlign: 'top' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
 
               {/* Logo IMDAI */}
               <img
                 src="/LogoIMDAI.png"
                 alt="IMDAI"
-                style={{ height: 100, width: 'auto', display: 'block', flexShrink: 0 }}
+                style={{ height: 110, width: 'auto', display: 'block', flexShrink: 0, marginTop: 2 }}
                 crossOrigin="anonymous"
               />
 
