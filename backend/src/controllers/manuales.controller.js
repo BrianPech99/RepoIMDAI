@@ -33,7 +33,9 @@ const getManualById = async (req, res) => {
     const { id_usuario, rol } = req.usuario
 
     const manualRes = await pool.query(
-      `SELECT m.*, u.nombre AS creado_por_nombre
+      `SELECT m.*, 
+              u.nombre AS creado_por_nombre,
+              TO_CHAR(m.fecha_emision, 'YYYY-MM-DD') AS fecha_elaboracion
        FROM manuales m JOIN usuarios u ON m.creado_por = u.id_usuario
        WHERE m.id_manual = $1`,
       [id]
