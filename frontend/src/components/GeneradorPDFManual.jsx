@@ -150,32 +150,32 @@ const estilos = `
 
   /* ── Capítulo heading ── */
   .pdf-cap-titulo {
-    font-size: 16pt;
+    font-size: 18pt;
     font-weight: 800;
     font-family: 'Montserrat', Arial, sans-serif;
     text-transform: uppercase;
-    margin-bottom: 20px;
-    padding-bottom: 6px;
+    margin-bottom: 16px;
   }
 
   /* ── Sección de texto ── */
   .pdf-seccion {
-    margin-bottom: 16px;
+    margin-bottom: 6px;
   }
   .pdf-seccion-titulo {
-    font-size: 10.5pt;
+    font-size: 10pt;
     font-weight: 800;
     font-family: 'Montserrat', Arial, sans-serif;
     text-transform: uppercase;
-    border-bottom: 1px solid #000;
-    padding-bottom: 2px;
-    margin-bottom: 6px;
+    color: #444;
+    border-bottom: 2.5px solid #000;
+    padding-bottom: 1px;
+    margin-bottom: 4px;
   }
   .pdf-seccion-texto {
-    font-size: 10pt;
+    font-size: 8.5pt;
     font-weight: 500;
     font-family: 'Montserrat', Arial, sans-serif;
-    line-height: 1.6;
+    line-height: 1.2;
     text-align: justify;
   }
 
@@ -567,43 +567,67 @@ function PaginaCaratula({ datos, total }) {
           {datos.dependencia}
         </div>
       </div>
-      <table className="pdf-caratula-tabla">
+
+      {/* Tabla carátula rediseñada */}
+      <table style={{
+        width: '100%', borderCollapse: 'separate', borderSpacing: 0,
+        border: '3px solid #000', borderRadius: 12, overflow: 'hidden',
+        fontFamily: 'Montserrat, Arial, sans-serif', marginTop: 20
+      }}>
+        {/* Headers */}
         <thead>
           <tr>
-            <th>ELABORÓ</th>
-            <th>REVISÓ</th>
-            <th>AUTORIZÓ</th>
-            <th>VALIDÓ</th>
+            {['ELABORÓ','REVISÓ','AUTORIZÓ','VALIDÓ'].map((h, i) => (
+              <th key={i} style={{
+                width: '25%', padding: '16px 10px', textAlign: 'center',
+                fontWeight: 800, fontSize: '13pt', color: '#7a1020',
+                borderBottom: 'none',
+                borderRight: 'none',
+                background: 'white'
+              }}>{h}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
+          {/* Fila nombres en itálica */}
           <tr>
-            <td style={{ height: 80 }}>
-              <span className="pdf-caratula-nombre">{datos.elaboro_nombre || ' '}</span>
-            </td>
-            <td style={{ height: 80 }}>
-              <span className="pdf-caratula-nombre">{datos.reviso_nombre || ' '}</span>
-            </td>
-            <td style={{ height: 80 }}>
-              <span className="pdf-caratula-nombre">{datos.autorizo_nombre || ' '}</span>
-            </td>
-            <td style={{ height: 80 }}>
-              <span className="pdf-caratula-nombre">{datos.valido_nombre || ' '}</span>
-            </td>
+            {[datos.elaboro_nombre, datos.reviso_nombre, datos.autorizo_nombre, datos.valido_nombre].map((nombre, i) => (
+              <td key={i} style={{
+                padding: '20px 14px', textAlign: 'center', verticalAlign: 'top',
+                fontStyle: 'italic', fontWeight: 500, fontSize: '10.5pt',
+                borderRight: 'none',
+                borderBottom: 'none', minHeight: 80
+              }}>{nombre || ' '}</td>
+            ))}
           </tr>
+          {/* Espacio vacío para firma */}
           <tr>
-            <td>
-              <span className="pdf-caratula-cargo">{datos.elaboro_cargo || ' '}</span>
-            </td>
-            <td>
-              <span className="pdf-caratula-cargo">{datos.reviso_cargo || ' '}</span>
-            </td>
-            <td>
-              <span className="pdf-caratula-cargo">{datos.autorizo_cargo || ' '}</span>
-            </td>
-            <td>
-              <span className="pdf-caratula-cargo">{datos.valido_cargo || ' '}</span>
-            </td>
+            {[null, null, null, null].map((_, i) => (
+              <td key={i} style={{
+                height: 100,
+                borderRight: 'none',
+                borderBottom: 'none'
+              }}></td>
+            ))}
+          </tr>
+          {/* Fila cargos */}
+          <tr>
+            {[datos.elaboro_cargo, datos.reviso_cargo, datos.autorizo_cargo, datos.valido_cargo].map((cargo, i) => (
+              <td key={i} style={{
+                padding: '16px 14px', textAlign: 'center', verticalAlign: 'middle',
+                fontWeight: 500, fontSize: '10.5pt',
+                borderRight: 'none',
+              }}>{cargo || ' '}</td>
+            ))}
+          </tr>
+          {/* Espacio vacío debajo del cargo */}
+          <tr>
+            {[null, null, null, null].map((_, i) => (
+              <td key={i} style={{
+                height: 80,
+                borderRight: 'none',
+              }}></td>
+            ))}
           </tr>
         </tbody>
       </table>
@@ -613,69 +637,166 @@ function PaginaCaratula({ datos, total }) {
 
 // ── PÁGINA 3: Índice ──────────────────────────────────────────────────────────
 function PaginaIndice({ datos, total }) {
+  const items = [
+    { num: '01', label: 'Carátula de Autorización', pag: 2, nivel: 1, linea: true },
+    { num: '02', label: 'Índice', pag: 3, nivel: 1 },
+    { num: '03', label: 'Capítulo I de Generales', pag: 4, nivel: 1 },
+    { num: '3.1',  label: 'Introducción', pag: 4, nivel: 2 },
+    { num: '3.2',  label: 'Antecedentes', pag: 4, nivel: 2 },
+    { num: '3.3',  label: 'Marco Normativo', pag: 4, nivel: 2 },
+    { num: '3.4',  label: 'Atribuciones Institucionales', pag: 4, nivel: 2 },
+    { num: '3.5',  label: 'Objetivo General', pag: 4, nivel: 2 },
+    { num: '3.6',  label: 'Misión', pag: 4, nivel: 2 },
+    { num: '3.7',  label: 'Visión', pag: 4, nivel: 2 },
+    { num: '3.8',  label: 'Principios y Valores Institucionales', pag: 4, nivel: 2 },
+    { num: '3.9',  label: 'Políticas de Operación', pag: 4, nivel: 2 },
+    { num: '3.10', label: 'Marco Conceptual', pag: 4, nivel: 2 },
+    { num: '04', label: 'Capítulo II de Organización', pag: 5, nivel: 1 },
+    { num: '4.1',  label: 'Organigrama General', pag: 5, nivel: 2 },
+    { num: '4.2',  label: 'Organigramas Específicos', pag: 5, nivel: 2 },
+    { num: '4.3',  label: 'Inventario de Puestos', pag: 5, nivel: 2 },
+    { num: '4.4',  label: 'Descripción de Puestos', pag: 6, nivel: 2 },
+    ...(datos.puestos || []).map((p, i) => ({
+      num: `4.4.${i + 1}`, label: `Descripción de puesto ${p.nombre_puesto || ''}`, pag: 6 + i, nivel: 2
+    })),
+    { num: '4.5',  label: 'Sección de Cambios', pag: 99, nivel: 2 },
+  ]
+
   return (
     <div className="pdf-pagina">
       <HeaderPagina datos={datos} numeroPagina={3} totalPaginas={total} />
-      <div className="pdf-indice">
-        <h2>ÍNDICE</h2>
-        {[
-          { num: '01', label: 'Carátula de Autorización', pag: 2, nivel: 1 },
-          { num: '02', label: 'Índice', pag: 3, nivel: 1 },
-          { num: '03', label: 'Capítulo I de Generales', pag: 4, nivel: 1 },
-          { num: '3.1', label: 'Introducción', pag: 4, nivel: 2 },
-          { num: '3.2', label: 'Antecedentes', pag: 4, nivel: 2 },
-          { num: '3.3', label: 'Marco Normativo', pag: 4, nivel: 2 },
-          { num: '3.4', label: 'Atribuciones Institucionales', pag: 4, nivel: 2 },
-          { num: '3.5', label: 'Objetivo General', pag: 4, nivel: 2 },
-          { num: '3.6', label: 'Misión', pag: 4, nivel: 2 },
-          { num: '3.7', label: 'Visión', pag: 4, nivel: 2 },
-          { num: '3.8', label: 'Principios y Valores Institucionales', pag: 4, nivel: 2 },
-          { num: '3.9', label: 'Políticas de Operación', pag: 4, nivel: 2 },
-          { num: '3.10', label: 'Marco Conceptual', pag: 4, nivel: 2 },
-          { num: '04', label: 'Capítulo II de Organización', pag: 5, nivel: 1 },
-          { num: '4.1', label: 'Organigrama General', pag: 5, nivel: 2 },
-          { num: '4.2', label: 'Organigramas Específicos', pag: 5, nivel: 2 },
-          { num: '4.3', label: 'Inventario de Puestos', pag: 5, nivel: 2 },
-          { num: '4.4', label: 'Descripción de Puestos', pag: 6, nivel: 2 },
-          ...(datos.puestos || []).map((p, i) => ({
-            num: `4.4.${i + 1}`, label: `Descripción de puesto ${p.nombre_puesto || ''}`, pag: 6 + i, nivel: 2
-          })),
-          { num: '4.5', label: 'Sección de Cambios', pag: 99, nivel: 2 },
-        ].map((item, i) => (
-          <div key={i} className={`pdf-indice-item nivel${item.nivel}`}>
-            <span><strong>{item.num}</strong>&nbsp;&nbsp;&nbsp;{item.label}</span>
-            <span>{item.pag}</span>
-          </div>
-        ))}
+
+      {/* Título ÍNDICE */}
+      <div style={{
+        fontFamily: 'Montserrat, Arial, sans-serif',
+        fontWeight: 800, fontSize: '28pt',
+        color: '#000', marginBottom: 24
+      }}>ÍNDICE</div>
+
+      {items.map((item, i) => (
+        <div key={i}>
+          {item.nivel === 1 ? (
+            <>
+              <div style={{
+                display: 'flex', alignItems: 'baseline',
+                gap: 16, marginTop: 14, marginBottom: item.linea ? 0 : 2,
+                fontFamily: 'Montserrat, Arial, sans-serif',
+              }}>
+                <span style={{
+                  fontWeight: 800, fontSize: '20pt', color: '#888',
+                  minWidth: 44, flexShrink: 0
+                }}>{item.num}</span>
+                <span style={{
+                  fontWeight: 800, fontSize: '13pt', color: '#888', flex: 1
+                }}>{item.label}</span>
+                <span style={{
+                  fontWeight: 500, fontSize: '11pt', color: '#000',
+                  minWidth: 80
+                }}>{item.pag}</span>
+              </div>
+              {item.linea && (
+                <div style={{
+                  height: 3, background: '#aaa',
+                  marginTop: 6, marginBottom: 4,
+                  marginRight: 70
+                }} />
+              )}
+            </>
+          ) : (
+            <div style={{
+              display: 'flex', alignItems: 'baseline',
+              gap: 16, paddingLeft: 15, marginBottom: 1,
+              fontFamily: 'Montserrat, Arial, sans-serif',
+            }}>
+              <span style={{
+                fontWeight: 500, fontSize: '10pt', color: '#000',
+                minWidth: 36, flexShrink: 0
+              }}>{item.num}</span>
+              <span style={{
+                fontWeight: 500, fontSize: '10pt', color: '#000', flex: 1
+              }}>{item.label}</span>
+              <span style={{
+                fontWeight: 500, fontSize: '10pt', color: '#000',
+                minWidth: 80
+              }}>{item.pag}</span>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── PÁGINA 4: Portada Capítulo I ─────────────────────────────────────────────
+function PaginaPortadaCapituloI({ datos, total, paginaInicio }) {
+  return (
+    <div className="pdf-pagina" style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <HeaderPagina datos={datos} numeroPagina={paginaInicio} totalPaginas={total} />
+      <div style={{ textAlign: 'center', marginTop: 80 }}>
+        <div style={{
+          fontFamily: 'Montserrat, Arial, sans-serif',
+          fontWeight: 400, fontSize: '42pt',
+          letterSpacing: 2, lineHeight: 1.1
+        }}>CAPÍTULO 1</div>
+        <div style={{
+          fontFamily: 'Montserrat, Arial, sans-serif',
+          fontWeight: 800, fontSize: '42pt',
+          letterSpacing: 2, lineHeight: 1.1
+        }}>DE GENERALES</div>
+      </div>
+      {/* Logo portada pegado al fondo */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        display: 'flex', justifyContent: 'center'
+      }}>
+        <img
+          src="/LogoPortada.png"
+          alt="Logo Portada"
+          style={{ width: 'auto', maxWidth: '85%', height: 'auto', display: 'block' }}
+          crossOrigin="anonymous"
+        />
       </div>
     </div>
   )
 }
 
-// ── PÁGINA 4+: Capítulo I ─────────────────────────────────────────────────────
+// ── PÁGINA 5+: Contenido Capítulo I ──────────────────────────────────────────
 function PaginaCapituloI({ datos, total, paginaInicio }) {
   return (
     <div className="pdf-pagina">
       <HeaderPagina datos={datos} numeroPagina={paginaInicio} totalPaginas={total} />
       <div className="pdf-cap-titulo">03. CAPÍTULO I DE GENERALES</div>
 
-      {datos.introduccion && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">INTRODUCCIÓN</div>
-          <div className="pdf-seccion-texto">{datos.introduccion}</div>
-        </div>
-      )}
-      {datos.antecedentes && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">ANTECEDENTES</div>
-          <div className="pdf-seccion-texto">{datos.antecedentes}</div>
-        </div>
-      )}
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">PORTADA</div>
+        <div className="pdf-seccion-texto">Anotar el nombre del Municipio de Benito Juárez, el Escudo del Municipio fecha de Elaboración, así como los datos de Identificación del Manual, como son; Nombre de la Dependencia, Unidad Administrativa o Entidad Municipal.</div>
+      </div>
 
-      {datos.marco_normativo?.length > 0 && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">MARCO NORMATIVO</div>
-          <table className="pdf-norma-tabla">
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">CARÁTULA DE AUTORIZACIONES</div>
+        <div className="pdf-seccion-texto">Hoja en la que se recaban las firmas en el documento, así como las firmas correspondientes de quien:</div>
+        <div className="pdf-seccion-texto">· Elabora; Servidor Público que el titular de la dependencia, Unidad Administrativa y/o Entidad Municipal designe como enlace Responsable.</div>
+        <div className="pdf-seccion-texto">· Revisa; Titulares de las direcciones Generales o Dirección de Área o titulares de las unidades administrativas que dependan directamente del servidor público que autoriza.</div>
+        <div className="pdf-seccion-texto">· Autoriza; Los titulares de las dependencias y Unidades administrativas que se refieren los artículos 22, 23 y 24 del reglamento Orgánico de la Administración Pública Centralizada de Benito Juárez, Quintana Roo.</div>
+        <div className="pdf-seccion-texto">· Validación; firma correspondiente únicamente al Titular del Instituto Municipal de Desarrollo Administrativo e Innovación del Municipio de Benito Juárez.</div>
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">INTRODUCCIÓN</div>
+        <div className="pdf-seccion-texto">Sección inicial que describe brevemente el contenido del Manual de Organización, expone su utilidad y el propósito general que pretende cumplir a través del mismo.</div>
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">ANTECEDENTES</div>
+        <div className="pdf-seccion-texto">Apartado en el que se relata la información del origen y evolución de la dependencia, Unidad Administrativa y/o Entidad Municipal designe como enlace Responsable.</div>
+        {datos.antecedentes && <div className="pdf-seccion-texto" style={{ marginTop: 4 }}>{datos.antecedentes}</div>}
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">MARCO NORMATIVO</div>
+        <div className="pdf-seccion-texto">Hace referencia a la normatividad en la cual se sustentan las funciones y actividades que se realizan. Respetando la pirámide Jurídica.</div>
+        {datos.marco_normativo?.length > 0 && (
+          <table className="pdf-norma-tabla" style={{ marginTop: 6 }}>
             <thead>
               <tr>
                 <th style={{ width: 30 }}>No.</th>
@@ -695,79 +816,166 @@ function PaginaCapituloI({ datos, total, paginaInicio }) {
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
 
-      {datos.atribuciones && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">ATRIBUCIONES INSTITUCIONALES</div>
-          <div className="pdf-seccion-texto">{datos.atribuciones}</div>
-        </div>
-      )}
-      {datos.objetivo_general && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">OBJETIVO</div>
-          <div className="pdf-seccion-texto">{datos.objetivo_general}</div>
-        </div>
-      )}
-      {datos.mision && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">MISIÓN</div>
-          <div className="pdf-seccion-texto">{datos.mision}</div>
-        </div>
-      )}
-      {datos.vision && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">VISIÓN</div>
-          <div className="pdf-seccion-texto">{datos.vision}</div>
-        </div>
-      )}
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">ATRIBUCIONES INSTITUCIONALES</div>
+        <div className="pdf-seccion-texto">Indican las facultades que le corresponden a la dependencia, Unidad administrativa y/o Entidad Municipal, de conformidad a lo señalado en la normativa aplicable. Asimismo, señala las funciones que deben realizar los servidores públicos asignados a la dependencia, Unidad administrativa y/o Entidad Municipal.</div>
+        {datos.atribuciones && <div className="pdf-seccion-texto" style={{ marginTop: 4 }}>{datos.atribuciones}</div>}
+      </div>
 
-      {(datos.principios?.length > 0 || datos.valores?.length > 0) && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">PRINCIPIOS Y VALORES INSTITUCIONALES</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">OBJETIVO</div>
+        <div className="pdf-seccion-texto">Es el propósito global que desea alcanzar o que persigue la <em>{datos.dependencia}</em> para el cumplimiento de las actividades que por su atribución le corresponde.</div>
+        {datos.objetivo_general && <div className="pdf-seccion-texto" style={{ marginTop: 4 }}>{datos.objetivo_general}</div>}
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">MISIÓN</div>
+        <div className="pdf-seccion-texto">Es la razón de ser de la <em>{datos.dependencia}</em>, con la cual todos los servidores públicos que laboran para la Institución deberán identificarse para su cumplimiento. Esta descripción debe ser clara, concreta y específica.</div>
+        {datos.mision && <div className="pdf-seccion-texto" style={{ marginTop: 4 }}>{datos.mision}</div>}
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">VISIÓN</div>
+        <div className="pdf-seccion-texto">En ella se expone a donde se dirige la <em>{datos.dependencia}</em> y como se ve a largo plazo; enunciar el escenario en el que se desea posicionar a la dependencia y/o entidad.</div>
+        {datos.vision && <div className="pdf-seccion-texto" style={{ marginTop: 4 }}>{datos.vision}</div>}
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">PRINCIPIOS Y VALORES INSTITUCIONALES</div>
+        <div className="pdf-seccion-texto">Consiste en un referente ético que consolida y guía el pensamiento, las actitudes, prácticas y formas de actuación de los servidores públicos y colaboradores de la <em>{datos.dependencia}</em>. Representando el Conjunto de normas morales que regulan la conducta de los servidores públicos hacia los servicios que prestan a la ciudadanía y en el desarrollo de sus actividades.</div>
+        {(datos.principios?.length > 0 || datos.valores?.length > 0) && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 6 }}>
             {datos.principios?.length > 0 && (
               <div>
-                <div style={{ fontWeight: 'bold', fontSize: '9.5pt', marginBottom: 4 }}>Principios:</div>
-                <ul className="pdf-lista">
-                  {datos.principios.map((p, i) => <li key={i}>{p}</li>)}
-                </ul>
+                <div style={{ fontWeight: 800, fontSize: '9.5pt', marginBottom: 4, fontFamily: 'Montserrat, Arial, sans-serif' }}>Principios:</div>
+                <ul className="pdf-lista">{datos.principios.map((p, i) => <li key={i}>{p}</li>)}</ul>
               </div>
             )}
             {datos.valores?.length > 0 && (
               <div>
-                <div style={{ fontWeight: 'bold', fontSize: '9.5pt', marginBottom: 4 }}>Valores:</div>
-                <ul className="pdf-lista">
-                  {datos.valores.map((v, i) => <li key={i}>{v}</li>)}
-                </ul>
+                <div style={{ fontWeight: 800, fontSize: '9.5pt', marginBottom: 4, fontFamily: 'Montserrat, Arial, sans-serif' }}>Valores:</div>
+                <ul className="pdf-lista">{datos.valores.map((v, i) => <li key={i}>{v}</li>)}</ul>
               </div>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {datos.politicas_operacion?.length > 0 && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">POLÍTICAS DE OPERACIÓN</div>
-          {datos.politicas_operacion.map((pol, i) => (
-            <div key={i} style={{ marginBottom: 8 }}>
-              {pol.area && <div style={{ fontWeight: 'bold', fontSize: '9.5pt', marginBottom: 3 }}>{String.fromCharCode(65 + i)}. {pol.area}</div>}
-              <div className="pdf-seccion-texto">{pol.descripcion}</div>
-            </div>
-          ))}
-        </div>
-      )}
+    </div>
+  )
+}
 
-      {datos.marco_conceptual?.length > 0 && (
-        <div className="pdf-seccion">
-          <div className="pdf-seccion-titulo">MARCO CONCEPTUAL</div>
-          {datos.marco_conceptual.map((c, i) => (
-            <div key={i} style={{ marginBottom: 6 }}>
-              <span style={{ fontWeight: 'bold' }}>{c.termino}:</span>{' '}
-              <span className="pdf-seccion-texto">{c.definicion}</span>
-            </div>
-          ))}
+// ── PÁGINA 6: Contenido Capítulo I (parte 2) ─────────────────────────────────
+function PaginaCapituloI2({ datos, total, paginaInicio }) {
+  return (
+    <div className="pdf-pagina">
+      <HeaderPagina datos={datos} numeroPagina={paginaInicio} totalPaginas={total} />
+      <div className="pdf-cap-titulo">03. CAPÍTULO I DE GENERALES</div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">POLÍTICAS DE OPERACIÓN</div>
+        {datos.politicas_operacion?.length > 0 ? datos.politicas_operacion.map((pol, i) => (
+          <div key={i} style={{ marginBottom: 4 }}>
+            {pol.area && <div style={{ fontWeight: 800, fontSize: '9.5pt', marginBottom: 2, fontFamily: 'Montserrat, Arial, sans-serif' }}>{String.fromCharCode(65 + i)}. {pol.area}</div>}
+            <div className="pdf-seccion-texto">{pol.descripcion}</div>
+          </div>
+        )) : <div className="pdf-seccion-texto">Son guías generales de acción que definen los límites y parámetros necesarios para ejecutar los procesos y actividades en cumplimiento de la función, planes, programas y proyectos previamente definidos por la organización que rigen la actuación de los integrantes de la institución, encaminados a lograr los objetivos y cumplir la misión.</div>}
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">ORGANIGRAMA GENERAL</div>
+        <div className="pdf-seccion-texto">Representa grafica de la estructura orgánica general por la <em>{datos.dependencia}</em>, debidamente validada por la ley o reglamento que la defina.</div>
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">ORGANIGRAMA ESPECÍFICO</div>
+        <div className="pdf-seccion-texto">Es la representación gráfica de la estructura orgánica de un área en particular, que permite observar las líneas de autoridad y responsabilidad e identifica los canales de comunicación para el buen funcionamiento de la Dependencia, Unidad Administrativa y/o entidad Municipal.</div>
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">MARCO CONCEPTUAL</div>
+        {datos.marco_conceptual?.length > 0 ? datos.marco_conceptual.map((c, i) => (
+          <div key={i} style={{ marginBottom: 4 }}>
+            <span style={{ fontWeight: 800, fontFamily: 'Montserrat, Arial, sans-serif' }}>{c.termino}:</span>{' '}
+            <span className="pdf-seccion-texto">{c.definicion}</span>
+          </div>
+        )) : <div className="pdf-seccion-texto">Son conceptos que se utilizan dentro del documento, con su descripción específica para ampliar la definición correspondiente que permita al lector una mejor comprensión del manual.</div>}
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">INVENTARIO DE PUESTO</div>
+        <div className="pdf-seccion-texto">Relaciona el nombre del puesto y de las personas que ocupan el puesto.</div>
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">DESCRIPCIÓN DE PUESTO</div>
+        <div className="pdf-seccion-texto">Definición propias del puesto, dentro de los cuales se encuentran las funciones genéricas y específicas, acorde al catálogo de puestos aprobado e incluyendo los criterios determinados en los lineamientos y disposiciones en materia de transparencia.</div>
+      </div>
+
+      <div className="pdf-seccion">
+        <div className="pdf-seccion-titulo">SECCIÓN DE CAMBIOS</div>
+        <div className="pdf-seccion-texto">Se especifica el número de versión de acuerdo a las modificaciones validadas del documento, así como las razones de los cambios y sus fechas.</div>
+      </div>
+
+      <div className="pdf-seccion" style={{ marginTop: 24 }}>
+        <div className="pdf-seccion-titulo">LENGUAJE INCLUYENTE CON PERSPECTIVA DE GÉNERO.</div>
+        <div className="pdf-seccion-texto" style={{ lineHeight: 1.2 }}>En la <em>{datos.dependencia}</em> nos apegarnos a la igualdad social, reforzamos el respeto de género y la NO violencia contra las mujeres.</div>
+        <div className="pdf-seccion-texto" style={{ marginTop: 3, lineHeight: 1.2 }}>Por ello, exhortamos para que la información contenida en este manual, sea plasmada a través del LENGUAJE INCLUYENTE, por lo mismo evitamos usar expresiones sutiles sexistas para prescindir de patrones de comportamiento y estereotipos de género.</div>
+      </div>
+
+      <div style={{
+        marginTop: 14, fontFamily: 'Montserrat, Arial, sans-serif',
+        fontWeight: 800, fontSize: '9pt', textAlign: 'justify', lineHeight: 1.5
+      }}>
+        ESTE DOCUMENTO DEBERÁ SER CONOCIDO POR TODO EL PERSONAL QUE LABORA EN LA DEPENDENCIA, UNIDAD ADMINISTRATIVA O ENTIDAD MUNICIPAL QUE ELABORA ESTE MANUAL, CON LA FINALIDAD DE QUE SE IDENTIFIQUEN LOS PROCEDIMIENTOS QUE AQUÍ SE LLEVAN A CABO; PERO, SOBRE TODO, LAS FUNCIONES Y RESPONSABILIDADES QUE SE TIENEN CADA UNO DE LOS INVOLUCRADOS EN LOS PROCEDIMIENTOS QUE SE MENCIONAN.
+      </div>
+
+    </div>
+  )
+}
+
+// ── PÁGINA: 3.1 Introducción ──────────────────────────────────────────────────
+function PaginaIntroduccion({ datos, total, paginaInicio }) {
+  return (
+    <div className="pdf-pagina">
+      <HeaderPagina datos={datos} numeroPagina={paginaInicio} totalPaginas={total} />
+
+      {/* Título */}
+      <div style={{
+        fontFamily: 'Montserrat, Arial, sans-serif',
+        fontWeight: 800, fontSize: '16pt',
+        marginBottom: 20
+      }}>3.1 INTRODUCCIÓN</div>
+
+      {/* Texto de introducción */}
+      <div style={{
+        fontFamily: 'Montserrat, Arial, sans-serif',
+        fontWeight: 500, fontSize: '10pt',
+        lineHeight: 1.8, textAlign: 'justify',
+        whiteSpace: 'pre-wrap'
+      }}>
+        {datos.introduccion || ''}
+      </div>
+
+      {/* Firma del superior jerárquico */}
+      {(datos.superior_nombre || datos.superior_cargo) && (
+        <div style={{
+          marginTop: 60, textAlign: 'center',
+          fontFamily: 'Montserrat, Arial, sans-serif',
+        }}>
+          <div style={{
+            width: 260, borderBottom: '1.5px solid #000',
+            margin: '0 auto 8px auto'
+          }} />
+          <div style={{ fontWeight: 800, fontSize: '10pt', textTransform: 'uppercase' }}>
+            {datos.superior_nombre}
+          </div>
+          <div style={{ fontWeight: 800, fontSize: '10pt', textTransform: 'uppercase' }}>
+            {datos.superior_cargo}
+          </div>
         </div>
       )}
     </div>
@@ -1069,7 +1277,7 @@ export default function GeneradorPDFManual({ datos, onCerrar }) {
 
   const puestos = datos.puestos || []
   // Total de páginas: portada + carátula + índice + capI + inventario + puestos + cambios
-  const totalPaginas = 5 + puestos.length + (datos.cambios?.length > 0 ? 1 : 0)
+  const totalPaginas = 7 + puestos.length + (datos.cambios?.length > 0 ? 1 : 0)
 
   const generarPDF = async () => {
     setGenerando(true)
@@ -1162,8 +1370,11 @@ export default function GeneradorPDFManual({ datos, onCerrar }) {
         <PaginaPortada datos={datos} total={totalPaginas} />
         <PaginaCaratula datos={datos} total={totalPaginas} />
         <PaginaIndice datos={datos} total={totalPaginas} />
-        <PaginaCapituloI datos={datos} total={totalPaginas} paginaInicio={4} />
-        <PaginaInventario datos={datos} total={totalPaginas} paginaInicio={5} />
+        <PaginaPortadaCapituloI datos={datos} total={totalPaginas} paginaInicio={4} />
+        <PaginaCapituloI datos={datos} total={totalPaginas} paginaInicio={5} />
+        <PaginaCapituloI2 datos={datos} total={totalPaginas} paginaInicio={6} />
+        <PaginaIntroduccion datos={datos} total={totalPaginas} paginaInicio={7} />
+        <PaginaInventario datos={datos} total={totalPaginas} paginaInicio={8} />
         {puestos.map((puesto, i) => (
           <PaginaPuesto
             key={i}
@@ -1171,10 +1382,10 @@ export default function GeneradorPDFManual({ datos, onCerrar }) {
             puesto={puesto}
             index={i}
             total={totalPaginas}
-            paginaInicio={6 + i}
+            paginaInicio={9 + i}
           />
         ))}
-        <PaginaCambios datos={datos} total={totalPaginas} paginaInicio={6 + puestos.length} />
+        <PaginaCambios datos={datos} total={totalPaginas} paginaInicio={9 + puestos.length} />
       </div>
       )}
     </div>

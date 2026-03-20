@@ -379,23 +379,6 @@ function VisorProcedimientos({ datos }) {
   )
 }
 
-// ── Normaliza cualquier formato de fecha a YYYY-MM-DD ────────────────────────
-const normalizarFecha = (str) => {
-  if (!str) return ''
-  const s = String(str)
-  // Ya está en formato YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s
-  // Cualquier otro formato — parsear con Date
-  const d = new Date(s)
-  if (!isNaN(d.getTime())) {
-    const dia  = String(d.getUTCDate()).padStart(2, '0')
-    const mes  = String(d.getUTCMonth() + 1).padStart(2, '0')
-    const anio = d.getUTCFullYear()
-    return `${anio}-${mes}-${dia}`
-  }
-  return s
-}
-
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function VisorManual({ manual, onCerrar }) {
   const [datosExtra, setDatosExtra] = useState(null)
@@ -410,16 +393,10 @@ export default function VisorManual({ manual, onCerrar }) {
         const res = await axios.get(`http://localhost:3000/manuales/${manual.id_manual}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
-        const d = res.data
-        setDatosExtra({
-          ...d,
-          fecha_elaboracion: normalizarFecha(d.fecha_elaboracion || d.fecha_emision),
-        })
+        setDatosExtra(res.data)
       } catch {
-        setDatosExtra({
-          ...manual,
-          fecha_elaboracion: normalizarFecha(manual.fecha_elaboracion || manual.fecha_emision),
-        })
+        // Si el endpoint detallado no existe aún, usar los datos básicos
+        setDatosExtra(manual)
       } finally {
         setCargando(false)
       }
